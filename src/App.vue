@@ -65,16 +65,33 @@
         </template>
       </li>
     </ul>
-    <input type="text" placeholder="Beverage Name" />
-    <button>🍺 Make Beverage</button>
+    <input type="text" placeholder="Beverage Name" v-model="beverageStore.currentName" />
+    <button @click="beverageStore.makeBeverage()">🍺 Make Beverage</button>
   </div>
-  <div id="beverage-container" style="margin-top: 20px"></div>
+  <div id="beverage-container" style="margin-top: 20px">
+    <div class="beverage-list">
+      <button
+        v-for="bev in beverageStore.beverages"
+        :key="bev.id"
+        @click="beverageStore.showBeverage(bev)"
+        :class="{ selected: isSelected(bev) }"
+      >
+        {{ bev.name }}
+      </button>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
 import Beverage from "./components/Beverage.vue";
 import { useBeverageStore } from "./stores/beverageStore";
+import type { BeverageType } from "./types/beverage";
 const beverageStore = useBeverageStore();
+const isSelected = (bev: BeverageType) =>
+  bev.temp === beverageStore.currentTemp &&
+  bev.base.id === beverageStore.currentBase?.id &&
+  bev.creamer.id === beverageStore.currentCreamer?.id &&
+  bev.syrup.id === beverageStore.currentSyrup?.id;
 </script>
 
 <style lang="scss">
@@ -90,5 +107,21 @@ html {
 }
 ul {
   list-style: none;
+}
+#beverage-container .beverage-list {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+#beverage-container button {
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  background: white;
+  cursor: pointer;
+}
+#beverage-container button.selected {
+  background: #42b3f5;
+  border-color: #000;
 }
 </style>
